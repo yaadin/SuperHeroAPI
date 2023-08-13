@@ -33,7 +33,7 @@ namespace SuperHeroAPI.Controllers
                 return StatusCode(500, $"An error occured: {ex.Message}");
             }
         }
-        [HttpGet("id")]
+        [HttpGet("{id}", Name = "GetById")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<List<HeroModel>>> GetbyId(int id)
@@ -52,6 +52,30 @@ namespace SuperHeroAPI.Controllers
                 return StatusCode(500, $"An error occured: {ex.Message}");
             }
           
+        }
+        [HttpPost]
+        public async Task<IActionResult> post([FromBody] HeroModel heromodel)
+        {
+            try
+            {
+                if (heromodel == null)
+                {
+                    return BadRequest();
+                }
+                if (heromodel.ID != 0)
+                {
+                    return BadRequest();
+                }
+                _ = _db.hero.AddAsync(heromodel);
+                await _db.SaveChangesAsync();
+
+                return Ok(Redirect("api/heroes"));
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occured: {ex.Message}");
+            }
         }
     }
 
